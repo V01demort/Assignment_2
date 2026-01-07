@@ -10,6 +10,22 @@ public class Main {
         ArrayList<Employee> employees = new ArrayList<>();
         boolean running = true;
 
+        products.add(new Product(1, "Futbolka", "Abibas", 1999.99));
+        products.add(new Product(2, "Noski", "Puma", 299.50));
+        products.add(new Product(3, "Trusy", "CalvinClain", 8999.00));
+
+        customers.add(new Customer(1, "Dimachka", 120, false));
+        customers.add(new Customer(2, "Madiyarchik", 500, true));
+        customers.add(new Customer(3, "Kotik", 0, false));
+
+        employees.add(new Employee(1, "Dabrynya Nikitich", 40000));
+        employees.add(new SalesAssistant(2, "Galya", 35000, 15));
+        employees.add(new Manager(5, "Tokaev", 90000, 12));
+
+        orders.add(new Order(1, customers.get(0), 2, true));
+        orders.add(new Order(2, customers.get(1), 5, false));
+        orders.add(new Order(3, customers.get(2), 1, true));
+
         while (running) {
             System.out.println("\n=== Clothing Store Management System ===");
             System.out.println("1. Add Product");
