@@ -1,7 +1,7 @@
 public class Employee {
-    private int id;
-    private String name;
-    private double salary;
+    protected int id;
+    protected String name;
+    protected double salary;
 
     public Employee() {
         this(0, "", 0.0);
