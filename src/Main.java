@@ -44,7 +44,7 @@ public class Main {
             System.out.println("0. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
@@ -84,7 +84,7 @@ public class Main {
                     }
                     break;
                 case 3:
-                    // Simplified: assumes customer exists, input ID to find or hardcode
+
                     System.out.print("Order ID: ");
                     int oid = scanner.nextInt();
                     System.out.print("Customer ID: ");
@@ -200,7 +200,7 @@ public class Main {
                     for (Employee em : employees) {
                         if (em instanceof SalesAssistant) {
                             System.out.println(em);
-                            ((SalesAssistant) em).makeSale(); // Demonstrate unique method
+                            ((SalesAssistant) em).makeSale();
                         }
                     }
                     break;
@@ -209,7 +209,7 @@ public class Main {
                     for (Employee em : employees) {
                         if (em instanceof Manager) {
                             System.out.println(em);
-                            ((Manager) em).assignTask(); // Demonstrate unique method
+                            ((Manager) em).assignTask();
                         }
                     }
                     break;

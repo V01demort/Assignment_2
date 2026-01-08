@@ -31,7 +31,6 @@ public class Manager extends Employee {
         return super.calculateBonus() + teamSize * 100;
     }
 
-    // Unique method
     public void assignTask() {
         System.out.println(getName() + " assigned a task to the team.");
     }

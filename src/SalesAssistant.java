@@ -31,7 +31,6 @@ public class SalesAssistant extends Employee {
         return super.calculateBonus() + salesCount * 10;
     }
 
-    // Unique method
     public void makeSale() {
         salesCount++;
         System.out.println(getName() + " made a sale. Total sales: " + salesCount);
