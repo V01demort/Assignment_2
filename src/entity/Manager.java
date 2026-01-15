@@ -1,3 +1,5 @@
+package entity;
+
 public class Manager extends Employee {
     private int teamSize;
 
@@ -8,8 +10,7 @@ public class Manager extends Employee {
 
     public Manager(int id, String name, double salary, int teamSize) {
         super(id, name, salary);
-        if (teamSize < 0) throw new IllegalArgumentException("Team size cannot be negative.");
-        this.teamSize = teamSize;
+        setTeamSize(teamSize);
     }
 
     public int getTeamSize() {
@@ -29,6 +30,11 @@ public class Manager extends Employee {
     @Override
     public double calculateBonus() {
         return super.calculateBonus() + teamSize * 100;
+    }
+
+    @Override
+    public String getRole() {
+        return "Manager";
     }
 
     public void assignTask() {

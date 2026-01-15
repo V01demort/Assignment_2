@@ -1,3 +1,5 @@
+package entity;
+
 public class Order {
     private int orderID;
     private Customer customer;
@@ -9,13 +11,10 @@ public class Order {
     }
 
     public Order(int orderID, Customer customer, int productsCount, boolean isPaid) {
-        if (orderID <= 0) throw new IllegalArgumentException("Order ID must be positive.");
-        if (customer == null) throw new IllegalArgumentException("Customer cannot be null.");
-        if (productsCount <= 0) throw new IllegalArgumentException("Products count must be positive.");
-        this.orderID = orderID;
-        this.customer = customer;
-        this.productsCount = productsCount;
-        this.isPaid = isPaid;
+        setOrderID(orderID);
+        setCustomer(customer);
+        setProductsCount(productsCount);
+        setPaid(isPaid);
     }
 
     public int getOrderID() {

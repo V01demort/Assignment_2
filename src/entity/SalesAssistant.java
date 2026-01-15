@@ -1,3 +1,5 @@
+package entity;
+
 public class SalesAssistant extends Employee {
     private int salesCount;
 
@@ -8,8 +10,7 @@ public class SalesAssistant extends Employee {
 
     public SalesAssistant(int id, String name, double salary, int salesCount) {
         super(id, name, salary);
-        if (salesCount < 0) throw new IllegalArgumentException("Sales count cannot be negative.");
-        this.salesCount = salesCount;
+        setSalesCount(salesCount);
     }
 
     public int getSalesCount() {
@@ -29,6 +30,11 @@ public class SalesAssistant extends Employee {
     @Override
     public double calculateBonus() {
         return super.calculateBonus() + salesCount * 10;
+    }
+
+    @Override
+    public String getRole() {
+        return "SalesAssistant";
     }
 
     public void makeSale() {
