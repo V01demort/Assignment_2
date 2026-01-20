@@ -11,10 +11,13 @@ public class Customer {
     }
 
     public Customer(int customerID, String name, int bonuses, boolean vip) {
-        setCustomerID(customerID);
-        setName(name);
-        setBonuses(bonuses);
-        setVip(vip);
+        if (customerID <= 0) throw new IllegalArgumentException("Customer ID must be positive.");
+        if (name == null || name.isEmpty()) throw new IllegalArgumentException("Name cannot be empty.");
+        if (bonuses < 0) throw new IllegalArgumentException("Bonuses cannot be negative.");
+        this.customerID = customerID;
+        this.name = name;
+        this.bonuses = bonuses;
+        this.vip = vip;
     }
 
     public int getCustomerID() {
@@ -32,7 +35,6 @@ public class Customer {
 
     public void setName(String name) {
         if (name == null || name.isEmpty()) throw new IllegalArgumentException("Name cannot be empty.");
-        if (!name.matches("[a-zA-Z]+")) throw new exception.InvalidInputException("Name must contain only letters.");
         this.name = name;
     }
 

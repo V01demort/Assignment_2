@@ -1,6 +1,6 @@
 package entity;
 
-public class Product implements Sellable {
+public class Product {
     private int productID;
     private String name;
     private String brand;
@@ -11,10 +11,14 @@ public class Product implements Sellable {
     }
 
     public Product(int productID, String name, String brand, double price) {
-        setProductID(productID);
-        setName(name);
-        setBrand(brand);
-        setPrice(price);
+        if (productID <= 0) throw new IllegalArgumentException("Product ID must be positive.");
+        if (name == null || name.isEmpty()) throw new IllegalArgumentException("Name cannot be empty.");
+        if (brand == null || brand.isEmpty()) throw new IllegalArgumentException("Brand cannot be empty.");
+        if (price < 0) throw new IllegalArgumentException("Price cannot be negative.");
+        this.productID = productID;
+        this.name = name;
+        this.brand = brand;
+        this.price = price;
     }
 
     public String getName() {
@@ -61,16 +65,6 @@ public class Product implements Sellable {
     public void increasePrice(double percent) {
         if (percent < 0) throw new IllegalArgumentException("Percent cannot be negative.");
         price += price * percent / 100;
-    }
-
-    @Override
-    public void sell() {
-        System.out.println("Sold product: " + name + " by " + brand + " for " + price);
-    }
-
-    @Override
-    public String getDescription() {
-        return name + " (" + brand + ") - Price: " + price;
     }
 
     @Override

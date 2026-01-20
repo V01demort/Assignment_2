@@ -1,5 +1,5 @@
-import menu.Menu;
-import menu.MenuManager;
+import service.Menu;
+import service.MenuManager;
 
 public class Main {
     public static void main(String[] args) {

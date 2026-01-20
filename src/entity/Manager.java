@@ -1,6 +1,8 @@
 package entity;
 
-public class Manager extends Employee {
+import service.Manageable;  // Implements the new interface
+
+public class Manager extends Employee implements Manageable {
     private int teamSize;
 
     public Manager() {
@@ -10,7 +12,8 @@ public class Manager extends Employee {
 
     public Manager(int id, String name, double salary, int teamSize) {
         super(id, name, salary);
-        setTeamSize(teamSize);
+        if (teamSize < 0) throw new IllegalArgumentException("Team size cannot be negative.");
+        this.teamSize = teamSize;
     }
 
     public int getTeamSize() {
@@ -33,8 +36,13 @@ public class Manager extends Employee {
     }
 
     @Override
-    public String getRole() {
+    public String getRole() {  // Implements abstract method
         return "Manager";
+    }
+
+    @Override
+    public void manage() {  // Implements Manageable interface
+        System.out.println(getName() + " is managing operations.");
     }
 
     public void assignTask() {

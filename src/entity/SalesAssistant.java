@@ -10,7 +10,8 @@ public class SalesAssistant extends Employee {
 
     public SalesAssistant(int id, String name, double salary, int salesCount) {
         super(id, name, salary);
-        setSalesCount(salesCount);
+        if (salesCount < 0) throw new IllegalArgumentException("Sales count cannot be negative.");
+        this.salesCount = salesCount;
     }
 
     public int getSalesCount() {
@@ -33,7 +34,7 @@ public class SalesAssistant extends Employee {
     }
 
     @Override
-    public String getRole() {
+    public String getRole() {  // Implements abstract method
         return "SalesAssistant";
     }
 

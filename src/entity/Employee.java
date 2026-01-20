@@ -10,9 +10,12 @@ public abstract class Employee {
     }
 
     public Employee(int id, String name, double salary) {
-        setId(id);
-        setName(name);
-        setSalary(salary);
+        if (id <= 0) throw new IllegalArgumentException("ID must be positive.");
+        if (name == null || name.isEmpty()) throw new IllegalArgumentException("Name cannot be empty.");
+        if (salary < 0) throw new IllegalArgumentException("Salary cannot be negative.");
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
     }
 
     public int getId() {
@@ -30,7 +33,6 @@ public abstract class Employee {
 
     public void setName(String name) {
         if (name == null || name.isEmpty()) throw new IllegalArgumentException("Name cannot be empty.");
-        if (!name.matches("[a-zA-Z]+")) throw new exception.InvalidInputException("Name must contain only letters.");
         this.name = name;
     }
 
@@ -43,16 +45,13 @@ public abstract class Employee {
         this.salary = salary;
     }
 
-    public void work() {
-        System.out.println(name + " is performing general employee duties.");
-    }
+    public abstract void work();  // Existing, but ensured abstract in parent if needed; children override
 
     public double calculateBonus() {
         return salary * 0.1;
     }
 
-    // Abstract method - children must implement
-    public abstract String getRole();
+    public abstract String getRole();  // New abstract method as per requirements
 
     @Override
     public String toString() {

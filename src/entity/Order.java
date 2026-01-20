@@ -11,10 +11,13 @@ public class Order {
     }
 
     public Order(int orderID, Customer customer, int productsCount, boolean isPaid) {
-        setOrderID(orderID);
-        setCustomer(customer);
-        setProductsCount(productsCount);
-        setPaid(isPaid);
+        if (orderID <= 0) throw new IllegalArgumentException("Order ID must be positive.");
+        if (customer == null) throw new IllegalArgumentException("Customer cannot be null.");
+        if (productsCount <= 0) throw new IllegalArgumentException("Products count must be positive.");
+        this.orderID = orderID;
+        this.customer = customer;
+        this.productsCount = productsCount;
+        this.isPaid = isPaid;
     }
 
     public int getOrderID() {
