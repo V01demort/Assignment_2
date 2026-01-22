@@ -1,6 +1,6 @@
 package entity;
 
-import service.Manageable;  // Implements the new interface
+import service.Manageable;
 
 public class Manager extends Employee implements Manageable {
     private int teamSize;
@@ -36,12 +36,12 @@ public class Manager extends Employee implements Manageable {
     }
 
     @Override
-    public String getRole() {  // Implements abstract method
+    public String getRole() {
         return "Manager";
     }
 
     @Override
-    public void manage() {  // Implements Manageable interface
+    public void manage() {
         System.out.println(getName() + " is managing operations.");
     }
 

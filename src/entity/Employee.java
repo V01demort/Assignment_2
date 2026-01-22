@@ -45,13 +45,13 @@ public abstract class Employee {
         this.salary = salary;
     }
 
-    public abstract void work();  // Existing, but ensured abstract in parent if needed; children override
+    public abstract void work();
 
     public double calculateBonus() {
         return salary * 0.1;
     }
 
-    public abstract String getRole();  // New abstract method as per requirements
+    public abstract String getRole();
 
     @Override
     public String toString() {

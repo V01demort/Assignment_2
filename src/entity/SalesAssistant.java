@@ -34,7 +34,7 @@ public class SalesAssistant extends Employee {
     }
 
     @Override
-    public String getRole() {  // Implements abstract method
+    public String getRole() {
         return "SalesAssistant";
     }
 

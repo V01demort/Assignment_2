@@ -20,14 +20,13 @@ public class MenuManager implements Menu {
         employees = new ArrayList<>();
         scanner = new Scanner(System.in);
 
-        // Initial test data (preserved from Main)
         products.add(new Product(1, "Futbolka", "Abibas", 1999.99));
         products.add(new Product(2, "Noski", "Puma", 299.50));
         products.add(new Product(3, "Trusy", "CalvinClain", 8999.00));
         customers.add(new Customer(1, "Dimachka", 120, false));
         customers.add(new Customer(2, "Madiyarchik", 500, true));
         customers.add(new Customer(3, "Kotik", 0, false));
-        employees.add(new Employee(1, "Dabrynya Nikitich", 40000) {  // Anonymous subclass for abstract Employee
+        employees.add(new Employee(1, "Dabrynya Nikitich", 40000) {
             @Override
             public void work() {
                 System.out.println(getName() + " is performing general employee duties.");
@@ -71,7 +70,7 @@ public class MenuManager implements Menu {
         while (running) {
             displayMenu();
             try {
-                int choice = Integer.parseInt(scanner.nextLine().trim());  // Use nextLine to handle inputs safely
+                int choice = Integer.parseInt(scanner.nextLine().trim());
                 switch (choice) {
                     case 1:
                         addProduct();
@@ -211,7 +210,7 @@ public class MenuManager implements Menu {
             String ename = scanner.nextLine().trim();
             System.out.print("Salary: ");
             double esalary = Double.parseDouble(scanner.nextLine().trim());
-            // Since Employee is abstract, create anonymous subclass
+
             Employee e = new Employee(eid, ename, esalary) {
                 @Override
                 public void work() {
