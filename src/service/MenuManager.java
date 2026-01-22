@@ -72,50 +72,21 @@ public class MenuManager implements Menu {
             try {
                 int choice = Integer.parseInt(scanner.nextLine().trim());
                 switch (choice) {
-                    case 1:
-                        addProduct();
-                        break;
-                    case 2:
-                        addCustomer();
-                        break;
-                    case 3:
-                        addOrder();
-                        break;
-                    case 4:
-                        addEmployee();
-                        break;
-                    case 5:
-                        addSalesAssistant();
-                        break;
-                    case 6:
-                        addManager();
-                        break;
-                    case 7:
-                        viewAllProducts();
-                        break;
-                    case 8:
-                        viewAllCustomers();
-                        break;
-                    case 9:
-                        viewAllOrders();
-                        break;
-                    case 10:
-                        viewAllEmployees();
-                        break;
-                    case 11:
-                        demonstratePolymorphism();
-                        break;
-                    case 12:
-                        viewSalesAssistants();
-                        break;
-                    case 13:
-                        viewManagers();
-                        break;
-                    case 0:
-                        running = false;
-                        break;
-                    default:
-                        System.out.println("Invalid choice.");
+                    case 1: addProduct(); break;
+                    case 2: addCustomer(); break;
+                    case 3: addOrder(); break;
+                    case 4: addEmployee(); break;
+                    case 5: addSalesAssistant(); break;
+                    case 6: addManager(); break;
+                    case 7: viewAllProducts(); break;
+                    case 8: viewAllCustomers(); break;
+                    case 9: viewAllOrders(); break;
+                    case 10: viewAllEmployees(); break;
+                    case 11: demonstratePolymorphism(); break;
+                    case 12: viewSalesAssistants(); break;
+                    case 13: viewManagers(); break;
+                    case 0: running = false; break;
+                    default: System.out.println("Invalid choice.");
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Error: Invalid number format. " + e.getMessage());
