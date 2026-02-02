@@ -109,7 +109,7 @@ public class MenuManager implements Menu {
             String pbrand = scanner.nextLine().trim();
             System.out.print("Price: ");
             double pprice = Double.parseDouble(scanner.nextLine().trim());
-            if (pname.length() > 50) {  // Example use of custom exception
+            if (pname.length() > 50) {
                 throw new InvalidFormatException("Product name too long.");
             }
             Product p = new Product(pid, pname, pbrand, pprice);
