@@ -1,9 +1,7 @@
-import service.Menu;
-import service.MenuManager;
+import service.ProductMenu;
 
 public class Main {
     public static void main(String[] args) {
-        Menu menu = new MenuManager();
-        menu.run();
+        new ProductMenu().run();
     }
 }
