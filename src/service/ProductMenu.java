@@ -16,19 +16,18 @@ public class ProductMenu {
             printMenu();
             int choice = readInt("Choose option: ");
 
-            if (choice == 0) {
-                System.out.println("Bye!");
-                return;
-            }
-
             switch (choice) {
-                case 1 -> addProduct();
-                case 2 -> viewAllProducts();
-                case 3 -> updateProduct();
-                case 4 -> deleteProduct();
-                case 5 -> searchByName();
-                case 6 -> searchByPriceRange();
-                case 7 -> searchByMinPrice();
+                case 0 -> {
+                    System.out.println("Bye!");
+                    return;
+                }
+                case 1 -> addProduct();            // INSERT (Week 7)
+                case 2 -> viewAllProducts();       // SELECT (Week 7)
+                case 3 -> updateProduct();         // UPDATE (Week 8)
+                case 4 -> deleteProduct();         // DELETE (Week 8)
+                case 5 -> searchByName();          // SEARCH ILIKE (Week 8)
+                case 6 -> searchByPriceRange();    // SEARCH BETWEEN (Week 8)
+                case 7 -> searchByMinPrice();      // SEARCH >= (Week 8)
                 default -> System.out.println("Wrong option.");
             }
         }
@@ -46,7 +45,7 @@ public class ProductMenu {
         System.out.println("0) Exit");
     }
 
-    // --------- 1) INSERT ----------
+    // ---------- INSERT ----------
     private void addProduct() {
         System.out.println("\n--- ADD PRODUCT ---");
         String name = readLine("Name: ");
@@ -59,7 +58,7 @@ public class ProductMenu {
         System.out.println(ok ? "Inserted ✅" : "Insert failed ❌");
     }
 
-    // --------- 2) SELECT ----------
+    // ---------- SELECT ----------
     private void viewAllProducts() {
         System.out.println("\n--- ALL PRODUCTS ---");
         List<Product> products = dao.getAllProducts();
@@ -74,111 +73,76 @@ public class ProductMenu {
         }
     }
 
-    // --------- 3) UPDATE ----------
+    // ---------- UPDATE ----------
+    // Минимальный вариант: пользователь вводит ВСЕ новые значения (без подгрузки старых)
     private void updateProduct() {
         System.out.println("\n--- UPDATE PRODUCT ---");
-        int id = readInt("Enter product_id: ");
+        int id = readInt("Enter product_id to update: ");
 
-        Product old = dao.getProductById(id);
-        if (old == null) {
-            System.out.println("Product not found.");
-            return;
-        }
-
-        System.out.println("Current values:");
-        printProduct(old);
-
-        System.out.println("Enter new values (press Enter to keep old).");
-
-        String newName = readLineAllowEmpty("New name: ");
-        String newBrand = readLineAllowEmpty("New brand: ");
-        String newPriceStr = readLineAllowEmpty("New price: ");
-
-        String name = newName.isEmpty() ? old.getName() : newName;
-        String brand = newBrand.isEmpty() ? old.getBrand() : newBrand;
-        double price = old.getPrice();
-        if (!newPriceStr.isEmpty()) price = parseDoubleSafe(newPriceStr, old.getPrice());
+        String name = readLine("New name: ");
+        String brand = readLine("New brand: ");
+        double price = readDouble("New price: ");
 
         Product updated = new Product(id, name, brand, price);
         boolean ok = dao.updateProduct(updated);
 
-        System.out.println(ok ? "Updated ✅" : "Update failed ❌");
+        System.out.println(ok ? "Updated ✅" : "Update failed (wrong id?) ❌");
     }
 
-    // --------- 4) DELETE ----------
+    // ---------- DELETE ----------
     private void deleteProduct() {
         System.out.println("\n--- DELETE PRODUCT ---");
-        int id = readInt("Enter product_id: ");
+        int id = readInt("Enter product_id to delete: ");
 
-        Product p = dao.getProductById(id);
-        if (p == null) {
-            System.out.println("Product not found.");
-            return;
-        }
-
-        System.out.println("You are going to delete:");
-        printProduct(p);
-
-        String confirm = readLine("Type 'yes' to confirm: ").trim().toLowerCase();
+        String confirm = readLine("Type 'yes' to confirm delete: ").trim().toLowerCase();
         if (!confirm.equals("yes")) {
             System.out.println("Cancelled.");
             return;
         }
 
         boolean ok = dao.deleteProduct(id);
-        System.out.println(ok ? "Deleted ✅" : "Delete failed ❌");
+        System.out.println(ok ? "Deleted ✅" : "Delete failed (wrong id?) ❌");
     }
 
-    // --------- 5) SEARCH NAME ----------
+    // ---------- SEARCH: NAME ----------
     private void searchByName() {
         System.out.println("\n--- SEARCH BY NAME ---");
         String q = readLine("Enter name part: ");
+
         List<Product> products = dao.searchByName(q);
-
-        if (products.isEmpty()) {
-            System.out.println("No matches.");
-            return;
-        }
-
-        for (Product p : products) {
-            printProduct(p);
-        }
+        printList(products);
     }
 
-    // --------- 6) SEARCH RANGE ----------
+    // ---------- SEARCH: PRICE RANGE ----------
     private void searchByPriceRange() {
         System.out.println("\n--- SEARCH BY PRICE RANGE ---");
         double min = readDouble("Min price: ");
         double max = readDouble("Max price: ");
 
         List<Product> products = dao.searchByPriceRange(min, max);
-        if (products.isEmpty()) {
-            System.out.println("No matches.");
-            return;
-        }
-
-        for (Product p : products) {
-            printProduct(p);
-        }
+        printList(products);
     }
 
-    // --------- 7) SEARCH MIN ----------
+    // ---------- SEARCH: MIN PRICE ----------
     private void searchByMinPrice() {
         System.out.println("\n--- SEARCH BY MIN PRICE ---");
         double min = readDouble("Min price: ");
 
         List<Product> products = dao.searchByMinPrice(min);
+        printList(products);
+    }
+
+    // ---------- helpers ----------
+    private void printList(List<Product> products) {
         if (products.isEmpty()) {
             System.out.println("No matches.");
             return;
         }
-
         for (Product p : products) {
             printProduct(p);
         }
     }
 
-    // --------- helpers ----------
     private void printProduct(Product p) {
         System.out.println("ID: " + p.getProductID());
         System.out.println("Name: " + p.getName());
@@ -211,21 +175,7 @@ public class ProductMenu {
         }
     }
 
-    private double parseDoubleSafe(String s, double fallback) {
-        try {
-            return Double.parseDouble(s.trim());
-        } catch (NumberFormatException e) {
-            System.out.println("Bad number, keeping old value.");
-            return fallback;
-        }
-    }
-
     private String readLine(String prompt) {
-        System.out.print(prompt);
-        return sc.nextLine();
-    }
-
-    private String readLineAllowEmpty(String prompt) {
         System.out.print(prompt);
         return sc.nextLine().trim();
     }

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ProductDAO {
 
-    // CREATE (у тебя уже было для Week7)
+    // CREATE
     public boolean insertProduct(Product product) {
         String sql = "INSERT INTO public.product (name, brand, price) VALUES (?, ?, ?)";
 
@@ -36,7 +36,7 @@ public class ProductDAO {
         return false;
     }
 
-    // READ (у тебя уже было для Week7 — нужно для проверки update/delete/search)
+    // READ
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM public.product ORDER BY product_id";
@@ -66,7 +66,7 @@ public class ProductDAO {
         return products;
     }
 
-    // UPDATE (обязательно)
+    // UPDATE
     public boolean updateProduct(Product product) {
         String sql = "UPDATE public.product SET name = ?, brand = ?, price = ? WHERE product_id = ?";
 
@@ -91,7 +91,7 @@ public class ProductDAO {
         return false;
     }
 
-    // DELETE (обязательно)
+    // DELETE
     public boolean deleteProduct(int productId) {
         String sql = "DELETE FROM public.product WHERE product_id = ?";
 
@@ -113,7 +113,7 @@ public class ProductDAO {
         return false;
     }
 
-    // SEARCH name (обязательно)
+    // SEARCH name
     public List<Product> searchByName(String namePart) {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM public.product WHERE name ILIKE ? ORDER BY name";
@@ -144,7 +144,7 @@ public class ProductDAO {
         return products;
     }
 
-    // SEARCH price range (обязательно)
+    // SEARCH price range
     public List<Product> searchByPriceRange(double minPrice, double maxPrice) {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM public.product WHERE price BETWEEN ? AND ? ORDER BY price DESC";
@@ -176,7 +176,7 @@ public class ProductDAO {
         return products;
     }
 
-    // SEARCH min price (обязательно)
+    // SEARCH min price
     public List<Product> searchByMinPrice(double minPrice) {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM public.product WHERE price >= ? ORDER BY price DESC";
