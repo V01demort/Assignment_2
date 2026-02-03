@@ -6,177 +6,189 @@ import entity.Product;
 import java.util.List;
 import java.util.Scanner;
 
-public class ProductMenu {
+public class ProductMenu implements Menu {
+    private Scanner scanner;
+    private ProductDAO productDAO;
 
-    private final ProductDAO dao = new ProductDAO();
-    private final Scanner sc = new Scanner(System.in);
+    public ProductMenu() {
+        scanner = new Scanner(System.in);
+        productDAO = new ProductDAO();
 
+        // Initial test data (insert to DB)
+        productDAO.insertProduct(new Product(1, "Futbolka", "Abibas", 1999.99));
+        productDAO.insertProduct(new Product(2, "Noski", "Puma", 299.50));
+        productDAO.insertProduct(new Product(3, "Trusy", "CalvinClain", 8999.00));
+    }
+
+    @Override
+    public void displayMenu() {
+        System.out.println("\n=== Product Menu (DB) ===");
+        System.out.println("1. Add Product");
+        System.out.println("2. View All Products");
+        System.out.println("3. Update Product");
+        System.out.println("4. Delete Product");
+        System.out.println("5. Search by Name");
+        System.out.println("6. Search by Price Range");
+        System.out.println("7. Search by Min Price");
+        System.out.println("0. Exit");
+        System.out.print("Enter your choice: ");
+    }
+
+    @Override
     public void run() {
-        while (true) {
-            printMenu();
-            int choice = readInt("Choose option: ");
-
-            switch (choice) {
-                case 0 -> {
-                    System.out.println("Bye!");
-                    return;
+        boolean running = true;
+        while (running) {
+            displayMenu();
+            try {
+                int choice = Integer.parseInt(scanner.nextLine().trim());
+                switch (choice) {
+                    case 1:
+                        addProduct();
+                        break;
+                    case 2:
+                        viewAllProducts();
+                        break;
+                    case 3:
+                        updateProduct();
+                        break;
+                    case 4:
+                        deleteProduct();
+                        break;
+                    case 5:
+                        searchByName();
+                        break;
+                    case 6:
+                        searchByPriceRange();
+                        break;
+                    case 7:
+                        searchByMinPrice();
+                        break;
+                    case 0:
+                        running = false;
+                        break;
+                    default:
+                        System.out.println("Invalid choice.");
                 }
-                case 1 -> addProduct();            // INSERT (Week 7)
-                case 2 -> viewAllProducts();       // SELECT (Week 7)
-                case 3 -> updateProduct();         // UPDATE (Week 8)
-                case 4 -> deleteProduct();         // DELETE (Week 8)
-                case 5 -> searchByName();          // SEARCH ILIKE (Week 8)
-                case 6 -> searchByPriceRange();    // SEARCH BETWEEN (Week 8)
-                case 7 -> searchByMinPrice();      // SEARCH >= (Week 8)
-                default -> System.out.println("Wrong option.");
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Invalid number format.");
+            } catch (Exception e) {
+                System.out.println("Unexpected error: " + e.getMessage());
             }
         }
+        scanner.close();
     }
 
-    private void printMenu() {
-        System.out.println("\n--- PRODUCT MENU ---");
-        System.out.println("1) Add product (INSERT)");
-        System.out.println("2) View all products (SELECT)");
-        System.out.println("3) Update product (UPDATE)");
-        System.out.println("4) Delete product (DELETE)");
-        System.out.println("5) Search by name (ILIKE)");
-        System.out.println("6) Search by price range (BETWEEN)");
-        System.out.println("7) Search by min price (>=)");
-        System.out.println("0) Exit");
-    }
-
-    // ---------- INSERT ----------
     private void addProduct() {
-        System.out.println("\n--- ADD PRODUCT ---");
-        String name = readLine("Name: ");
-        String brand = readLine("Brand: ");
-        double price = readDouble("Price: ");
-
-        Product p = new Product(0, name, brand, price);
-        boolean ok = dao.insertProduct(p);
-
-        System.out.println(ok ? "Inserted ✅" : "Insert failed ❌");
+        System.out.print("Name: ");
+        String name = scanner.nextLine().trim();
+        System.out.print("Brand: ");
+        String brand = scanner.nextLine().trim();
+        System.out.print("Price: ");
+        double price = Double.parseDouble(scanner.nextLine().trim());
+        Product product = new Product(0, name, brand, price);
+        productDAO.insertProduct(product);
+        System.out.println("Product added.");
     }
 
-    // ---------- SELECT ----------
     private void viewAllProducts() {
-        System.out.println("\n--- ALL PRODUCTS ---");
-        List<Product> products = dao.getAllProducts();
-
-        if (products.isEmpty()) {
-            System.out.println("No products in DB.");
-            return;
-        }
-
+        System.out.println("\nAll Products:");
+        List<Product> products = productDAO.getAllProducts();
         for (Product p : products) {
-            printProduct(p);
+            System.out.println(p);
         }
     }
 
-    // ---------- UPDATE ----------
-    // Минимальный вариант: пользователь вводит ВСЕ новые значения (без подгрузки старых)
     private void updateProduct() {
-        System.out.println("\n--- UPDATE PRODUCT ---");
-        int id = readInt("Enter product_id to update: ");
+        System.out.print("Enter Product ID to update: ");
+        int id = Integer.parseInt(scanner.nextLine().trim());
 
-        String name = readLine("New name: ");
-        String brand = readLine("New brand: ");
-        double price = readDouble("New price: ");
+        Product existing = productDAO.getProductById(id);
+        if (existing == null) {
+            System.out.println("Product not found.");
+            return;
+        }
 
-        Product updated = new Product(id, name, brand, price);
-        boolean ok = dao.updateProduct(updated);
+        System.out.println("Current Info: " + existing);
 
-        System.out.println(ok ? "Updated ✅" : "Update failed (wrong id?) ❌");
+        System.out.print("New Name [" + existing.getName() + "]: ");
+        String newName = scanner.nextLine().trim();
+        if (newName.isEmpty()) newName = existing.getName();
+
+        System.out.print("New Brand [" + existing.getBrand() + "]: ");
+        String newBrand = scanner.nextLine().trim();
+        if (newBrand.isEmpty()) newBrand = existing.getBrand();
+
+        System.out.print("New Price [" + existing.getPrice() + "]: ");
+        String priceInput = scanner.nextLine().trim();
+        double newPrice = priceInput.isEmpty() ? existing.getPrice() : Double.parseDouble(priceInput);
+
+        existing.setName(newName);
+        existing.setBrand(newBrand);
+        existing.setPrice(newPrice);
+
+        boolean success = productDAO.updateProduct(existing);
+        if (success) {
+            System.out.println("Product updated.");
+        } else {
+            System.out.println("Update failed.");
+        }
     }
 
-    // ---------- DELETE ----------
     private void deleteProduct() {
-        System.out.println("\n--- DELETE PRODUCT ---");
-        int id = readInt("Enter product_id to delete: ");
+        System.out.print("Enter Product ID to delete: ");
+        int id = Integer.parseInt(scanner.nextLine().trim());
 
-        String confirm = readLine("Type 'yes' to confirm delete: ").trim().toLowerCase();
-        if (!confirm.equals("yes")) {
-            System.out.println("Cancelled.");
+        Product product = productDAO.getProductById(id);
+        if (product == null) {
+            System.out.println("Product not found.");
             return;
         }
 
-        boolean ok = dao.deleteProduct(id);
-        System.out.println(ok ? "Deleted ✅" : "Delete failed (wrong id?) ❌");
+        System.out.println("Product to delete: " + product);
+
+        System.out.print("Are you sure? (y/n): ");
+        String confirm = scanner.nextLine().trim();
+        if ("y".equalsIgnoreCase(confirm)) {
+            boolean success = productDAO.deleteProduct(id);
+            if (success) {
+                System.out.println("Product deleted.");
+            } else {
+                System.out.println("Delete failed.");
+            }
+        } else {
+            System.out.println("Deletion cancelled.");
+        }
     }
 
-    // ---------- SEARCH: NAME ----------
     private void searchByName() {
-        System.out.println("\n--- SEARCH BY NAME ---");
-        String q = readLine("Enter name part: ");
-
-        List<Product> products = dao.searchByName(q);
-        printList(products);
+        System.out.print("Enter name to search: ");
+        String name = scanner.nextLine().trim();
+        List<Product> results = productDAO.searchByName(name);
+        System.out.println("\nSearch Results:");
+        for (Product p : results) {
+            System.out.println(p);
+        }
     }
 
-    // ---------- SEARCH: PRICE RANGE ----------
     private void searchByPriceRange() {
-        System.out.println("\n--- SEARCH BY PRICE RANGE ---");
-        double min = readDouble("Min price: ");
-        double max = readDouble("Max price: ");
-
-        List<Product> products = dao.searchByPriceRange(min, max);
-        printList(products);
+        System.out.print("Enter min price: ");
+        double min = Double.parseDouble(scanner.nextLine().trim());
+        System.out.print("Enter max price: ");
+        double max = Double.parseDouble(scanner.nextLine().trim());
+        List<Product> results = productDAO.searchByPriceRange(min, max);
+        System.out.println("\nSearch Results:");
+        for (Product p : results) {
+            System.out.println(p);
+        }
     }
 
-    // ---------- SEARCH: MIN PRICE ----------
     private void searchByMinPrice() {
-        System.out.println("\n--- SEARCH BY MIN PRICE ---");
-        double min = readDouble("Min price: ");
-
-        List<Product> products = dao.searchByMinPrice(min);
-        printList(products);
-    }
-
-    // ---------- helpers ----------
-    private void printList(List<Product> products) {
-        if (products.isEmpty()) {
-            System.out.println("No matches.");
-            return;
+        System.out.print("Enter min price: ");
+        double min = Double.parseDouble(scanner.nextLine().trim());
+        List<Product> results = productDAO.searchByMinPrice(min);
+        System.out.println("\nSearch Results:");
+        for (Product p : results) {
+            System.out.println(p);
         }
-        for (Product p : products) {
-            printProduct(p);
-        }
-    }
-
-    private void printProduct(Product p) {
-        System.out.println("ID: " + p.getProductID());
-        System.out.println("Name: " + p.getName());
-        System.out.println("Brand: " + p.getBrand());
-        System.out.println("Price: " + p.getPrice());
-        System.out.println("---");
-    }
-
-    private int readInt(String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String s = sc.nextLine().trim();
-            try {
-                return Integer.parseInt(s);
-            } catch (NumberFormatException e) {
-                System.out.println("Enter integer.");
-            }
-        }
-    }
-
-    private double readDouble(String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String s = sc.nextLine().trim();
-            try {
-                return Double.parseDouble(s);
-            } catch (NumberFormatException e) {
-                System.out.println("Enter number.");
-            }
-        }
-    }
-
-    private String readLine(String prompt) {
-        System.out.print(prompt);
-        return sc.nextLine().trim();
     }
 }

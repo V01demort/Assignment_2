@@ -6,57 +6,41 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDAO {
 
-    // CREATE
-    public boolean insertProduct(Product product) {
-        String sql = "INSERT INTO public.product (name, brand, price) VALUES (?, ?, ?)";
+    public void insertProduct(Product product) {
+        String sql = "INSERT INTO product (name, brand, price) VALUES (?, ?, ?)";
 
         Connection connection = DatabaseConnection.getConnection();
-        if (connection == null) return false;
-
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, product.getName());
             statement.setString(2, product.getBrand());
             statement.setDouble(3, product.getPrice());
-
-            int rows = statement.executeUpdate();
+            statement.executeUpdate();
             statement.close();
-            return rows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             DatabaseConnection.closeConnection(connection);
         }
-        return false;
     }
 
-    // READ
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM public.product ORDER BY product_id";
+        String sql = "SELECT * FROM product";
 
         Connection connection = DatabaseConnection.getConnection();
-        if (connection == null) return products;
-
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet rs = statement.executeQuery();
-
-            while (rs.next()) {
-                int id = rs.getInt("product_id");
-                String name = rs.getString("name");
-                String brand = rs.getString("brand");
-                double price = rs.getDouble("price");
-                products.add(new Product(id, name, brand, price));
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                products.add(extractProductFromResultSet(resultSet));
             }
-
-            rs.close();
+            resultSet.close();
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -66,23 +50,41 @@ public class ProductDAO {
         return products;
     }
 
-    // UPDATE
-    public boolean updateProduct(Product product) {
-        String sql = "UPDATE public.product SET name = ?, brand = ?, price = ? WHERE product_id = ?";
+    public Product getProductById(int id) {
+        Product product = null;
+        String sql = "SELECT * FROM product WHERE product_id = ?";
 
         Connection connection = DatabaseConnection.getConnection();
-        if (connection == null) return false;
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                product = extractProductFromResultSet(resultSet);
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConnection.closeConnection(connection);
+        }
+        return product;
+    }
 
+    public boolean updateProduct(Product product) {
+        String sql = "UPDATE product SET name = ?, brand = ?, price = ? WHERE product_id = ?";
+
+        Connection connection = DatabaseConnection.getConnection();
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, product.getName());
             statement.setString(2, product.getBrand());
             statement.setDouble(3, product.getPrice());
-            statement.setInt(4, product.getProductID()); // <-- твой id
-
-            int rows = statement.executeUpdate();
+            statement.setInt(4, product.getProductID());
+            int rowsUpdated = statement.executeUpdate();
             statement.close();
-            return rows > 0;
+            return rowsUpdated > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -91,20 +93,16 @@ public class ProductDAO {
         return false;
     }
 
-    // DELETE
-    public boolean deleteProduct(int productId) {
-        String sql = "DELETE FROM public.product WHERE product_id = ?";
+    public boolean deleteProduct(int id) {
+        String sql = "DELETE FROM product WHERE product_id = ?";
 
         Connection connection = DatabaseConnection.getConnection();
-        if (connection == null) return false;
-
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, productId);
-
-            int rows = statement.executeUpdate();
+            statement.setInt(1, id);
+            int rowsDeleted = statement.executeUpdate();
             statement.close();
-            return rows > 0;
+            return rowsDeleted > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -113,28 +111,19 @@ public class ProductDAO {
         return false;
     }
 
-    // SEARCH name
-    public List<Product> searchByName(String namePart) {
+    public List<Product> searchByName(String name) {
         List<Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM public.product WHERE name ILIKE ? ORDER BY name";
+        String sql = "SELECT * FROM product WHERE name ILIKE ? ORDER BY name";
 
         Connection connection = DatabaseConnection.getConnection();
-        if (connection == null) return products;
-
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, "%" + namePart + "%");
-
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("product_id");
-                String name = rs.getString("name");
-                String brand = rs.getString("brand");
-                double price = rs.getDouble("price");
-                products.add(new Product(id, name, brand, price));
+            statement.setString(1, "%" + name + "%");
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                products.add(extractProductFromResultSet(resultSet));
             }
-
-            rs.close();
+            resultSet.close();
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -144,29 +133,20 @@ public class ProductDAO {
         return products;
     }
 
-    // SEARCH price range
-    public List<Product> searchByPriceRange(double minPrice, double maxPrice) {
+    public List<Product> searchByPriceRange(double min, double max) {
         List<Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM public.product WHERE price BETWEEN ? AND ? ORDER BY price DESC";
+        String sql = "SELECT * FROM product WHERE price BETWEEN ? AND ? ORDER BY price DESC";
 
         Connection connection = DatabaseConnection.getConnection();
-        if (connection == null) return products;
-
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setDouble(1, minPrice);
-            statement.setDouble(2, maxPrice);
-
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("product_id");
-                String name = rs.getString("name");
-                String brand = rs.getString("brand");
-                double price = rs.getDouble("price");
-                products.add(new Product(id, name, brand, price));
+            statement.setDouble(1, min);
+            statement.setDouble(2, max);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                products.add(extractProductFromResultSet(resultSet));
             }
-
-            rs.close();
+            resultSet.close();
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -176,28 +156,19 @@ public class ProductDAO {
         return products;
     }
 
-    // SEARCH min price
-    public List<Product> searchByMinPrice(double minPrice) {
+    public List<Product> searchByMinPrice(double min) {
         List<Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM public.product WHERE price >= ? ORDER BY price DESC";
+        String sql = "SELECT * FROM product WHERE price >= ? ORDER BY price DESC";
 
         Connection connection = DatabaseConnection.getConnection();
-        if (connection == null) return products;
-
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setDouble(1, minPrice);
-
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("product_id");
-                String name = rs.getString("name");
-                String brand = rs.getString("brand");
-                double price = rs.getDouble("price");
-                products.add(new Product(id, name, brand, price));
+            statement.setDouble(1, min);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                products.add(extractProductFromResultSet(resultSet));
             }
-
-            rs.close();
+            resultSet.close();
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -205,5 +176,13 @@ public class ProductDAO {
             DatabaseConnection.closeConnection(connection);
         }
         return products;
+    }
+
+    private Product extractProductFromResultSet(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("product_id");
+        String name = resultSet.getString("name");
+        String brand = resultSet.getString("brand");
+        double price = resultSet.getDouble("price");
+        return new Product(id, name, brand, price);
     }
 }

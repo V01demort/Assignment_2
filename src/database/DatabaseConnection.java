@@ -8,6 +8,7 @@ public class DatabaseConnection {
     private static final String URL = "jdbc:postgresql://localhost:5432/clothing_db";
     private static final String USER = "postgres";
     private static final String PASSWORD = "123";
+
     public static Connection getConnection() {
         Connection connection = null;
         try {
@@ -19,6 +20,7 @@ public class DatabaseConnection {
         }
         return connection;
     }
+
     public static void closeConnection(Connection connection) {
         if (connection != null) {
             try {
