@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ProductDAO {
 
-    // ---------- CREATE ----------
+    // CREATE (у тебя уже было для Week7)
     public boolean insertProduct(Product product) {
         String sql = "INSERT INTO public.product (name, brand, price) VALUES (?, ?, ?)";
 
@@ -25,9 +25,9 @@ public class ProductDAO {
             statement.setString(2, product.getBrand());
             statement.setDouble(3, product.getPrice());
 
-            int rowsInserted = statement.executeUpdate();
+            int rows = statement.executeUpdate();
             statement.close();
-            return rowsInserted > 0;
+            return rows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -36,7 +36,7 @@ public class ProductDAO {
         return false;
     }
 
-    // ---------- READ (ALL) ----------
+    // READ (у тебя уже было для Week7 — нужно для проверки update/delete/search)
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM public.product ORDER BY product_id";
@@ -46,13 +46,17 @@ public class ProductDAO {
 
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
+            ResultSet rs = statement.executeQuery();
 
-            while (resultSet.next()) {
-                products.add(extractProduct(resultSet));
+            while (rs.next()) {
+                int id = rs.getInt("product_id");
+                String name = rs.getString("name");
+                String brand = rs.getString("brand");
+                double price = rs.getDouble("price");
+                products.add(new Product(id, name, brand, price));
             }
 
-            resultSet.close();
+            rs.close();
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -62,33 +66,7 @@ public class ProductDAO {
         return products;
     }
 
-    // ---------- READ (BY ID) ----------
-    public Product getProductById(int productId) {
-        String sql = "SELECT * FROM public.product WHERE product_id = ?";
-
-        Connection connection = DatabaseConnection.getConnection();
-        if (connection == null) return null;
-
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, productId);
-            ResultSet rs = statement.executeQuery();
-
-            Product p = null;
-            if (rs.next()) p = extractProduct(rs);
-
-            rs.close();
-            statement.close();
-            return p;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DatabaseConnection.closeConnection(connection);
-        }
-        return null;
-    }
-
-    // ---------- UPDATE ----------
+    // UPDATE (обязательно)
     public boolean updateProduct(Product product) {
         String sql = "UPDATE public.product SET name = ?, brand = ?, price = ? WHERE product_id = ?";
 
@@ -100,11 +78,11 @@ public class ProductDAO {
             statement.setString(1, product.getName());
             statement.setString(2, product.getBrand());
             statement.setDouble(3, product.getPrice());
-            statement.setInt(4, product.getProductID()); // важно: id в WHERE
+            statement.setInt(4, product.getProductID()); // <-- твой id
 
-            int rowsUpdated = statement.executeUpdate();
+            int rows = statement.executeUpdate();
             statement.close();
-            return rowsUpdated > 0;
+            return rows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -113,7 +91,7 @@ public class ProductDAO {
         return false;
     }
 
-    // ---------- DELETE ----------
+    // DELETE (обязательно)
     public boolean deleteProduct(int productId) {
         String sql = "DELETE FROM public.product WHERE product_id = ?";
 
@@ -124,9 +102,9 @@ public class ProductDAO {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, productId);
 
-            int rowsDeleted = statement.executeUpdate();
+            int rows = statement.executeUpdate();
             statement.close();
-            return rowsDeleted > 0;
+            return rows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -135,7 +113,7 @@ public class ProductDAO {
         return false;
     }
 
-    // ---------- SEARCH: NAME (ILIKE) ----------
+    // SEARCH name (обязательно)
     public List<Product> searchByName(String namePart) {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM public.product WHERE name ILIKE ? ORDER BY name";
@@ -149,7 +127,11 @@ public class ProductDAO {
 
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                products.add(extractProduct(rs));
+                int id = rs.getInt("product_id");
+                String name = rs.getString("name");
+                String brand = rs.getString("brand");
+                double price = rs.getDouble("price");
+                products.add(new Product(id, name, brand, price));
             }
 
             rs.close();
@@ -162,7 +144,7 @@ public class ProductDAO {
         return products;
     }
 
-    // ---------- SEARCH: PRICE BETWEEN ----------
+    // SEARCH price range (обязательно)
     public List<Product> searchByPriceRange(double minPrice, double maxPrice) {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM public.product WHERE price BETWEEN ? AND ? ORDER BY price DESC";
@@ -177,7 +159,11 @@ public class ProductDAO {
 
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                products.add(extractProduct(rs));
+                int id = rs.getInt("product_id");
+                String name = rs.getString("name");
+                String brand = rs.getString("brand");
+                double price = rs.getDouble("price");
+                products.add(new Product(id, name, brand, price));
             }
 
             rs.close();
@@ -190,7 +176,7 @@ public class ProductDAO {
         return products;
     }
 
-    // ---------- SEARCH: MIN PRICE ----------
+    // SEARCH min price (обязательно)
     public List<Product> searchByMinPrice(double minPrice) {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM public.product WHERE price >= ? ORDER BY price DESC";
@@ -204,7 +190,11 @@ public class ProductDAO {
 
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                products.add(extractProduct(rs));
+                int id = rs.getInt("product_id");
+                String name = rs.getString("name");
+                String brand = rs.getString("brand");
+                double price = rs.getDouble("price");
+                products.add(new Product(id, name, brand, price));
             }
 
             rs.close();
@@ -215,16 +205,5 @@ public class ProductDAO {
             DatabaseConnection.closeConnection(connection);
         }
         return products;
-    }
-
-    // ---------- helper ----------
-    private Product extractProduct(ResultSet resultSet) throws SQLException {
-        int id = resultSet.getInt("product_id");
-        String name = resultSet.getString("name");
-        String brand = resultSet.getString("brand");
-        double price = resultSet.getDouble("price");
-
-        // под твой конструктор Product(id, name, brand, price)
-        return new Product(id, name, brand, price);
     }
 }
