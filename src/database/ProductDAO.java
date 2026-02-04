@@ -29,49 +29,6 @@ public class ProductDAO {
         }
     }
 
-    public List<Product> getAllProducts() {
-        List<Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM product";
-
-        Connection connection = DatabaseConnection.getConnection();
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                products.add(extractProductFromResultSet(resultSet));
-            }
-            resultSet.close();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DatabaseConnection.closeConnection(connection);
-        }
-        return products;
-    }
-
-    public Product getProductById(int id) {
-        Product product = null;
-        String sql = "SELECT * FROM product WHERE product_id = ?";
-
-        Connection connection = DatabaseConnection.getConnection();
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                product = extractProductFromResultSet(resultSet);
-            }
-            resultSet.close();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DatabaseConnection.closeConnection(connection);
-        }
-        return product;
-    }
-
     public boolean updateProduct(Product product) {
         String sql = "UPDATE product SET name = ?, brand = ?, price = ? WHERE product_id = ?";
 
@@ -109,6 +66,49 @@ public class ProductDAO {
             DatabaseConnection.closeConnection(connection);
         }
         return false;
+    }
+
+    public Product getProductById(int id) {
+        Product product = null;
+        String sql = "SELECT * FROM product WHERE product_id = ?";
+
+        Connection connection = DatabaseConnection.getConnection();
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                product = extractProductFromResultSet(resultSet);
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConnection.closeConnection(connection);
+        }
+        return product;
+    }
+
+    public List<Product> getAllProducts() {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM product";
+
+        Connection connection = DatabaseConnection.getConnection();
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                products.add(extractProductFromResultSet(resultSet));
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConnection.closeConnection(connection);
+        }
+        return products;
     }
 
     public List<Product> searchByName(String name) {
