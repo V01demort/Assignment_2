@@ -13,11 +13,6 @@ public class ProductMenu implements Menu {
     public ProductMenu() {
         scanner = new Scanner(System.in);
         productDAO = new ProductDAO();
-
-        // Initial test data (insert to DB)
-        productDAO.insertProduct(new Product(1, "Futbolka", "Abibas", 1999.99));
-        productDAO.insertProduct(new Product(2, "Noski", "Puma", 299.50));
-        productDAO.insertProduct(new Product(3, "Trusy", "CalvinClain", 8999.00));
     }
 
     @Override
