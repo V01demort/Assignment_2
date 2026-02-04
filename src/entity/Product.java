@@ -11,7 +11,7 @@ public class Product {
     }
 
     public Product(int productID, String name, String brand, double price) {
-        if (productID <= 0) throw new IllegalArgumentException("Product ID must be positive.");
+        if (productID < 0) throw new IllegalArgumentException("Product ID cannot be negative.");
         if (name == null || name.isEmpty()) throw new IllegalArgumentException("Name cannot be empty.");
         if (brand == null || brand.isEmpty()) throw new IllegalArgumentException("Brand cannot be empty.");
         if (price < 0) throw new IllegalArgumentException("Price cannot be negative.");
@@ -44,7 +44,7 @@ public class Product {
     }
 
     public void setProductID(int productID) {
-        if (productID <= 0) throw new IllegalArgumentException("Product ID must be positive.");
+        if (productID < 0) throw new IllegalArgumentException("Product ID cannot be negative.");
         this.productID = productID;
     }
 
