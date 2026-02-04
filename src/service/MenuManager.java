@@ -20,9 +20,6 @@ public class MenuManager implements Menu {
         employees = new ArrayList<>();
         scanner = new Scanner(System.in);
 
-        products.add(new Product(1, "Futbolka", "Abibas", 1999.99));
-        products.add(new Product(2, "Noski", "Puma", 299.50));
-        products.add(new Product(3, "Trusy", "CalvinClain", 8999.00));
         customers.add(new Customer(1, "Dimachka", 120, false));
         customers.add(new Customer(2, "Madiyarchik", 500, true));
         customers.add(new Customer(3, "Kotik", 0, false));
